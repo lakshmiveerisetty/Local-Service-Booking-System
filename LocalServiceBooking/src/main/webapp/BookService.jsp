@@ -39,6 +39,32 @@ String serviceName = request.getParameter("service");
 if (serviceName == null) {
     serviceName = "Plumbing";
 }
+
+String serviceEmoji = "";
+
+try {
+    Connection con = DBConnection.getConnection();
+
+    String sql = "SELECT emoji FROM services "
+               + "WHERE service_name = ? AND active = TRUE";
+
+    PreparedStatement ps = con.prepareStatement(sql);
+    ps.setString(1, serviceName);
+
+    ResultSet rs = ps.executeQuery();
+
+    if (rs.next()) {
+        serviceEmoji = rs.getString("emoji");
+    }
+
+    rs.close();
+    ps.close();
+    con.close();
+
+} catch (Exception e) {
+    e.printStackTrace();
+}
+
 %>
 
 <!DOCTYPE html>
@@ -140,7 +166,9 @@ if (serviceName == null) {
     <form action="BookServiceServlet" method="post">
 
         <label>Select Service</label>
-       <input type="text" value="<%= serviceName %>" readonly>
+        <input type="text"
+       value="<%= serviceEmoji %> <%= serviceName %>"
+       readonly>
 <input type="hidden" name="service" value="<%= serviceName %>">
 
         <label>Booking Date</label>

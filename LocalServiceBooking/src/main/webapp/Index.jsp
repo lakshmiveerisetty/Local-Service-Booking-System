@@ -1,6 +1,45 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 pageEncoding="UTF-8"%>
 
+<%@ page import="java.sql.*" %>
+<%@ page import="java.util.*" %>
+<%@ page import="com.utility.DBConnection" %>
+
+<%
+    List<String[]> serviceList = new ArrayList<>();
+
+    Connection con = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+
+    try {
+        con = DBConnection.getConnection();
+
+        String sql = "SELECT DISTINCT service_name, description, emoji "
+                   + "FROM services WHERE active = TRUE ORDER BY service_name";
+
+        ps = con.prepareStatement(sql);
+        rs = ps.executeQuery();
+
+        while (rs.next()) {
+            String[] service = new String[3];
+
+            service[0] = rs.getString("service_name");
+            service[1] = rs.getString("description");
+            service[2] = rs.getString("emoji");
+
+            serviceList.add(service);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        if (rs != null) rs.close();
+        if (ps != null) ps.close();
+        if (con != null) con.close();
+    }
+%>
+
 <!DOCTYPE html><html>
 <head>
 <meta charset="UTF-8">
@@ -183,35 +222,31 @@ footer {
         Professional help for your everyday needs
     </p><div class="service-container">
 
-    <div class="card">
-        <div class="emoji">🔧</div>
-        <h3>Plumbing</h3>
-        <p>Help with taps, pipes, leaks, and repairs.</p>
-    </div>
+   <div class="service-container">
 
-    <div class="card">
-        <div class="emoji">💡</div>
-        <h3>Electrical Repair</h3>
-        <p>Electrical repairs and home wiring services.</p>
-    </div>
+    <%
+        for (String[] service : serviceList) {
+    %>
 
-    <div class="card">
-        <div class="emoji">🧹</div>
-        <h3>Home Cleaning</h3>
-        <p>Keep your home clean and comfortable.</p>
-    </div>
+        <div class="card">
 
-    <div class="card">
-        <div class="emoji">🪚</div>
-        <h3>Carpenter</h3>
-        <p>Furniture repairs and woodwork assistance.</p>
-    </div>
+            <div class="emoji"><%= service[2] %></div>
 
-    <div class="card">
-        <div class="emoji">❄️</div>
-        <h3>AC Repair</h3>
-        <p>Air conditioner servicing and maintenance.</p>
-    </div>
+            <h3><%= service[0] %></h3>
+
+            <p>
+                <%= service[1] != null && !service[1].trim().isEmpty()
+                    ? service[1]
+                    : "Professional service for your everyday needs." %>
+            </p>
+
+        </div>
+
+    <%
+        }
+    %>
+
+</div>
 
 </div>
 

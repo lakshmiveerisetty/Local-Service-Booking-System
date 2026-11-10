@@ -83,6 +83,7 @@ tr:nth-child(even) {
 <nav>
     <a href="AdminDashboardServlet">Refresh Bookings</a>
     <a href="AddService.jsp">Add New Service</a>
+    <a href="AdminServicesServlet">Manage Services</a>
     <a href="LogoutServlet"
        onclick="return confirm('Do you really want to logout?');">
        Logout

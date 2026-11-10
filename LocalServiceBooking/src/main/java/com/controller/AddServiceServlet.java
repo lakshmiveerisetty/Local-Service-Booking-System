@@ -1,3 +1,4 @@
+
 package com.controller;
 
 import java.io.IOException;
@@ -20,7 +21,7 @@ public class AddServiceServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request,
             HttpServletResponse response)
             throws ServletException, IOException {
-        System.out.println("Called");
+
         HttpSession session = request.getSession(false);
 
         if (session == null ||
@@ -34,14 +35,14 @@ public class AddServiceServlet extends HttpServlet {
         String serviceName = request.getParameter("serviceName");
         String description = request.getParameter("description");
         String priceText = request.getParameter("price");
-        String category = request.getParameter("category");
+        String emoji = request.getParameter("emoji");
 
         try {
             double price = Double.parseDouble(priceText);
 
             if (serviceName == null || serviceName.trim().isEmpty()
                     || description == null || description.trim().isEmpty()
-                    || category == null || category.trim().isEmpty()
+                    || emoji == null || emoji.trim().isEmpty()
                     || !Double.isFinite(price) || price <= 0) {
 
                 response.sendRedirect("AddService.jsp?error=invalid");
@@ -51,7 +52,7 @@ public class AddServiceServlet extends HttpServlet {
             Connection con = DBConnection.getConnection();
 
             String sql = "INSERT INTO services "
-                    + "(service_name, description, price, category, active) "
+                    + "(service_name, description, price, active, emoji) "
                     + "VALUES (?, ?, ?, ?, ?)";
 
             PreparedStatement ps = con.prepareStatement(sql);
@@ -59,8 +60,10 @@ public class AddServiceServlet extends HttpServlet {
             ps.setString(1, serviceName.trim());
             ps.setString(2, description.trim());
             ps.setDouble(3, price);
-            ps.setString(4, category);
-            ps.setBoolean(5, true);
+            ps.setBoolean(4, true);
+            ps.setString(5, emoji.trim());
+
+           
 
             int rows = ps.executeUpdate();
 
